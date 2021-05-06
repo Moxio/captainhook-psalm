@@ -15,7 +15,7 @@ $ composer require --dev moxio/captainhook-psalm
 
 Usage
 -----
-Add Psalm error checking as a `pre-commit` to your `captainhook.json` configuration file:
+Add Psalm error checking as a `pre-commit`-hook to your `captainhook.json` configuration file:
 ```json
 {
     "pre-commit": {
@@ -29,7 +29,7 @@ Add Psalm error checking as a `pre-commit` to your `captainhook.json` configurat
 }
 ```
 
-The check is only run when committing changes to PHP files. It will thus not detect pre-existing duplications in PHP
+The check is only run when committing changes to PHP files. It will thus not detect pre-existing errors in PHP
 files which are not staged.
 
 The action expects [Psalm](https://github.com/vimeo/psalm) to be installed as a local Composer package (i.e. available
