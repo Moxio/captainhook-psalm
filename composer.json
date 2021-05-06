@@ -1,0 +1,36 @@
+{
+	"name": "moxio/captainhook-psalm",
+	"type": "library",
+	"description": "Captain Hook Plugin to check for newly introduced Psalm errors",
+	"license": "MIT",
+	"keywords" : [ "captainhook", "psalm", "php", "git", "pre-commit" ],
+	"authors": [
+		{
+			"name": "Moxio",
+			"homepage": "https://www.moxio.com"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Moxio\\CaptainHook\\Psalm\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Moxio\\CaptainHook\\Psalm\\Test\\": "tests/"
+		}
+	},
+	"require": {
+		"php": "^7.2 || ^8.0",
+		"captainhook/captainhook": "^4.4 || ^5.0",
+		"sebastianfeldmann/cli": "^3.0",
+		"sebastianfeldmann/git": "^2.2 || ^3.0"
+	},
+	"require-dev": {
+		"squizlabs/php_codesniffer": "^3.5",
+		"phpunit/phpunit": "^8.5"
+	},
+	"scripts": {
+		"phpcs": "phpcs --standard=phpcs.xml.dist src"
+	}
+}
