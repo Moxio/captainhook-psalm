@@ -9,6 +9,7 @@ use CaptainHook\App\Console\IO;
 use CaptainHook\App\Exception\ActionFailed;
 use CaptainHook\App\Hook\Action;
 use SebastianFeldmann\Cli\Processor;
+use SebastianFeldmann\Cli\Processor\ProcOpen;
 use SebastianFeldmann\Git\Repository;
 
 final class PsalmCheckAction implements Action
@@ -16,9 +17,9 @@ final class PsalmCheckAction implements Action
     /** @var Processor */
     private $processor;
 
-    public function __construct(Processor $processor)
+    public function __construct(Processor $processor = null)
     {
-        $this->processor = $processor;
+        $this->processor = $processor ?? new ProcOpen();
     }
 
     public function execute(Config $config, IO $io, Repository $repository, Config\Action $action): void
