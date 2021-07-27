@@ -27,22 +27,38 @@ class XmlConfig implements Config
 
         $projectFilesElements = $this->document->getElementsByTagNameNS(self::XMLNS, "projectFiles");
         foreach ($projectFilesElements as $projectFilesElement) {
-            $directoryElements = $projectFilesElement->getElementsByTagNameNS(self::XMLNS, "directory");
-            foreach ($directoryElements as $directoryElement) {
-                $directoryName = $directoryElement->getAttribute("name");
-                $normalizedDirectoryPath = $this->normalizePath($directoryName);
-                if (strpos($normalizedRelativePath, $normalizedDirectoryPath . "/") === 0) {
-                    return true;
+            if ($this->matchesFileSet($normalizedRelativePath, $projectFilesElement)) {
+                $ignoreFilesElements = $this->document->getElementsByTagNameNS(self::XMLNS, "ignoreFiles");
+                foreach ($ignoreFilesElements as $ignoreFilesElement) {
+                    if ($this->matchesFileSet($normalizedRelativePath, $ignoreFilesElement)) {
+                        return false;
+                    }
                 }
-            }
 
-            $fileElements = $projectFilesElement->getElementsByTagNameNS(self::XMLNS, "file");
-            foreach ($fileElements as $fileElement) {
-                $fileName = $fileElement->getAttribute("name");
-                $normalizedFilePath = $this->normalizePath($fileName);
-                if ($normalizedRelativePath === $normalizedFilePath) {
-                    return true;
-                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function matchesFileSet(string $normalizedRelativePath, \DOMElement $fileSetElement): bool
+    {
+        $directoryElements = $fileSetElement->getElementsByTagNameNS(self::XMLNS, "directory");
+        foreach ($directoryElements as $directoryElement) {
+            $directoryName = $directoryElement->getAttribute("name");
+            $normalizedDirectoryPath = $this->normalizePath($directoryName);
+            if (strpos($normalizedRelativePath, $normalizedDirectoryPath . "/") === 0) {
+                return true;
+            }
+        }
+
+        $fileElements = $fileSetElement->getElementsByTagNameNS(self::XMLNS, "file");
+        foreach ($fileElements as $fileElement) {
+            $fileName = $fileElement->getAttribute("name");
+            $normalizedFilePath = $this->normalizePath($fileName);
+            if ($normalizedRelativePath === $normalizedFilePath) {
+                return true;
             }
         }
 

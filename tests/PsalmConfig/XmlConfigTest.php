@@ -70,6 +70,54 @@ XML;
         $this->assertFalse($config->belongsToProjectFiles("test/Foo/Bar2.php"));
     }
 
+    public function testExcludesFilesInIgnoreFilesDirectories(): void
+    {
+        $projectFilesContent = <<<XML
+<directory name="src" />
+<directory name="test/Foo" />
+<ignoreFiles>
+    <directory name="src/Foo" />
+    <directory name="test/Foo/Bar" />
+</ignoreFiles>
+XML;
+        $config = $this->createConfig($projectFilesContent);
+
+        $this->assertFalse($config->belongsToProjectFiles("src/Foo/Bar.php"));
+        $this->assertFalse($config->belongsToProjectFiles("test/Foo/Bar/Baz.php"));
+    }
+
+    public function testExcludesFilesInIgnoreFilesFiles(): void
+    {
+        $projectFilesContent = <<<XML
+<directory name="src" />
+<directory name="test/Foo" />
+<ignoreFiles>
+    <file name="src/Foo/Bar.php" />
+    <file name="test/Foo/Bar/Baz.php" />
+</ignoreFiles>
+XML;
+        $config = $this->createConfig($projectFilesContent);
+
+        $this->assertFalse($config->belongsToProjectFiles("src/Foo/Bar.php"));
+        $this->assertFalse($config->belongsToProjectFiles("test/Foo/Bar/Baz.php"));
+    }
+
+    public function testDoesNotExcludeFilesNotMatchingIgnoreFilesBlock(): void
+    {
+        $projectFilesContent = <<<XML
+<directory name="src" />
+<directory name="test/Foo" />
+<ignoreFiles>
+    <file name="src/Foo/Baz.php" />
+    <directory name="test/Foo/Bar2" />
+</ignoreFiles>
+XML;
+        $config = $this->createConfig($projectFilesContent);
+
+        $this->assertTrue($config->belongsToProjectFiles("src/Foo/Bar.php"));
+        $this->assertTrue($config->belongsToProjectFiles("test/Foo/Bar/Baz.php"));
+    }
+
     public function testDoesNotCareAboutDifferentDirectorySeparators(): void
     {
         $projectFilesContent = <<<XML
