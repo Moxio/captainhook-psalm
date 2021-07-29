@@ -59,6 +59,13 @@ This may be useful in scenarios where you have a shared CaptainHook configuratio
 [included](https://captainhookphp.github.io/captainhook/configure.html#includes) both in projects that use Psalm and
 projects that don't. If Psalm is installed, the action is run. In projects without Psalm, the validation is skipped.
 
+### Influence of `projectFiles` in `psalm.xml`
+If this plugin detects a `psalm.xml` configuration file, this plugin will try to use the
+`projectFiles` configured in that file to filter the files checked by Psalm. This is done
+on a best-effort basis: not all constructs possible within `projectFiles` are supported,
+but simple directories and files (along with `ignoreFiles`) should work fine. If you
+encounter a situation where files aren't properly filtered, feel free to send a PR.
+
 Versioning
 ----------
 This project adheres to [Semantic Versioning](http://semver.org/).
