@@ -21,7 +21,7 @@ final class PsalmCheckAction implements Action
     /** @var Processor */
     private $processor;
 
-    public function __construct(Processor $processor = null, Loader $psalmConfigLoader = null)
+    public function __construct(?Processor $processor = null, ?Loader $psalmConfigLoader = null)
     {
         $this->processor = $processor ?? new ProcOpen();
         $this->psalmConfigLoader = $psalmConfigLoader ?? new XmlLoader();
