@@ -208,4 +208,62 @@ final class PsalmCheckActionTest extends TestCase
 
         $this->psalmCheckAction->execute($this->config, $io, $this->repository, $configAction);
     }
+
+	public function testIncludesAdditionalArgumentsFromOptionsArray(): void
+	{
+		$this->indexOperator->expects($this->once())
+			->method("hasStagedFilesOfType")
+			->with("php")
+			->willReturn(true);
+		$this->indexOperator->expects($this->once())
+			->method("getStagedFilesOfType")
+			->with("php")
+			->willReturn(["foo.php"]);
+		$this->psalmConfig->expects($this->any())
+			->method("belongsToProjectFiles")
+			->willReturn(true);
+
+		$configAction = new Config\Action(PsalmCheckAction::class, [
+			'args' => ['--no-cache', '--stats']
+		]);
+
+		$psalmBin = str_replace("/", DIRECTORY_SEPARATOR, "./vendor/bin/psalm");
+		$expectedCmd = $psalmBin . " --no-cache --stats 'foo.php'";
+
+		$this->processor->expects($this->once())
+			->method("run")
+			->with($this->equalTo($expectedCmd))
+			->willReturn(new Result($expectedCmd, 0));
+
+		$this->psalmCheckAction->execute($this->config, $this->io, $this->repository, $configAction);
+	}
+
+	public function testIncludesAdditionalArgumentsFromOptionsString(): void
+	{
+		$this->indexOperator->expects($this->once())
+			->method("hasStagedFilesOfType")
+			->with("php")
+			->willReturn(true);
+		$this->indexOperator->expects($this->once())
+			->method("getStagedFilesOfType")
+			->with("php")
+			->willReturn(["foo.php"]);
+		$this->psalmConfig->expects($this->any())
+			->method("belongsToProjectFiles")
+			->willReturn(true);
+
+		$configAction = new Config\Action(PsalmCheckAction::class, [
+			'args' => '--diff'
+		]);
+
+		$psalmBin = str_replace("/", DIRECTORY_SEPARATOR, "./vendor/bin/psalm");
+		$expectedCmd = $psalmBin . " --diff 'foo.php'";
+
+		$this->processor->expects($this->once())
+			->method("run")
+			->with($this->equalTo($expectedCmd))
+			->willReturn(new Result($expectedCmd, 0));
+
+		$this->psalmCheckAction->execute($this->config, $this->io, $this->repository, $configAction);
+	}
 }

@@ -29,23 +29,19 @@ final class PsalmCheckAction implements Action
 
     public function execute(Config $config, IO $io, Repository $repository, Config\Action $action): void
     {
-        $repositoryRootDir = $repository->getRoot();
-        $psalmConfig = $this->psalmConfigLoader->getConfigForProject($repositoryRootDir);
-
-        $indexOperator = $repository->getIndexOperator();
-
-        if ($indexOperator->hasStagedFilesOfType("php") === false) {
-            return;
-        }
-        $stagedPhpFiles = $indexOperator->getStagedFilesOfType("php");
-        $checkedPhpFiles = array_filter($stagedPhpFiles, function (string $phpFile) use ($psalmConfig): bool {
-            return $psalmConfig->belongsToProjectFiles($phpFile);
-        });
-        if (count($checkedPhpFiles) === 0) {
+        $checkedPhpFiles = $this->getStagedPhpFiles($repository);
+        if ($checkedPhpFiles === []) {
             return;
         }
 
         $psalmArgs = [];
+
+        $additionalPsalmArgs = $this->getAdditionalArguments($action);
+        foreach ($additionalPsalmArgs as $additionalPsalmArg) {
+            $psalmArgs[] = $additionalPsalmArg;
+        }
+
+
         foreach ($checkedPhpFiles as $checkedPhpFile) {
             $psalmArgs[] = escapeshellarg($checkedPhpFile);
         }
@@ -64,5 +60,40 @@ final class PsalmCheckAction implements Action
                 throw new \LogicException("Psalm returned with an unexpected code " . $psalmResult->getCode());
             }
         }
+    }
+
+    private function getStagedPhpFiles(Repository $repository): array
+    {
+        $repositoryRootDir = $repository->getRoot();
+        $psalmConfig = $this->psalmConfigLoader->getConfigForProject($repositoryRootDir);
+
+        $indexOperator = $repository->getIndexOperator();
+
+        if ($indexOperator->hasStagedFilesOfType("php") === false) {
+            return [];
+        }
+
+        $stagedPhpFiles = $indexOperator->getStagedFilesOfType("php");
+        return array_filter($stagedPhpFiles, function (string $phpFile) use ($psalmConfig): bool {
+            return $psalmConfig->belongsToProjectFiles($phpFile);
+        });
+    }
+
+    private function getAdditionalArguments(Config\Action $action): array
+    {
+        $options = $action->getOptions();
+        $extraArgs = $options->get('args', []);
+
+        $additionalPsalmArgs = [];
+
+        if (is_array($extraArgs)) {
+            foreach ($extraArgs as $arg) {
+                $additionalPsalmArgs[] = $arg;
+            }
+        } elseif (is_string($extraArgs)) {
+            $additionalPsalmArgs[] = $extraArgs;
+        }
+
+        return $additionalPsalmArgs;
     }
 }
