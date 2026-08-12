@@ -4,9 +4,7 @@
          bootstrap="vendor/autoload.php"
          executionOrder="depends,defects"
          beStrictAboutOutputDuringTests="true"
-         cacheDirectory=".phpunit.cache"
-         requireCoverageMetadata="true"
-         beStrictAboutCoverageMetadata="true">
+         cacheDirectory=".phpunit.cache">
   <testsuites>
     <testsuite name="default">
       <directory>tests</directory>

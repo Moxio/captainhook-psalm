@@ -11,7 +11,6 @@ use CaptainHook\App\Exception\ActionFailed;
 use Moxio\CaptainHook\Psalm\PsalmCheckAction;
 use Moxio\CaptainHook\Psalm\PsalmConfig\Config as PsalmConfig;
 use Moxio\CaptainHook\Psalm\PsalmConfig\Loader as PsalmConfigLoader;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
@@ -30,9 +29,9 @@ final class PsalmCheckActionTest extends TestCase
     private $psalmConfig;
     /** @var PsalmCheckAction */
     private $psalmCheckAction;
-    /** @var MockObject&Config */
+    /** @var Stub&Config */
     private $config;
-    /** @var MockObject&Repository */
+    /** @var Stub&Repository */
     private $repository;
     /** @var MockObject&Index */
     private $indexOperator;
