@@ -12,6 +12,7 @@ use Moxio\CaptainHook\Psalm\PsalmCheckAction;
 use Moxio\CaptainHook\Psalm\PsalmConfig\Config as PsalmConfig;
 use Moxio\CaptainHook\Psalm\PsalmConfig\Loader as PsalmConfigLoader;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use SebastianFeldmann\Cli\Command\Result;
 use SebastianFeldmann\Cli\Processor;
@@ -24,42 +25,39 @@ final class PsalmCheckActionTest extends TestCase
 
     /** @var MockObject&Processor */
     private $processor;
-    /** @var MockObject&PsalmConfigLoader */
-    private $psalmConfigLoader;
     /** @var MockObject&PsalmConfig */
     private $psalmConfig;
     /** @var PsalmCheckAction */
     private $psalmCheckAction;
-    /** @var MockObject&Config */
+    /** @var Stub&Config */
     private $config;
-    /** @var MockObject&Repository */
+    /** @var Stub&Repository */
     private $repository;
     /** @var MockObject&Index */
     private $indexOperator;
-    /** @var IO  */
+    /** @var IO */
     private $io;
 
     protected function setUp(): void
     {
         $this->processor = $this->createMock(Processor::class);
-        $this->psalmConfigLoader = $this->createMock(PsalmConfigLoader::class);
-        $this->psalmCheckAction = new PsalmCheckAction($this->processor, $this->psalmConfigLoader);
+        $psalmConfigLoader = $this->createStub(PsalmConfigLoader::class);
+        $this->psalmCheckAction = new PsalmCheckAction($this->processor, $psalmConfigLoader);
 
-        $this->config = $this->createMock(Config::class);
-        $this->repository = $this->createMock(Repository::class);
+        $this->config = $this->createStub(Config::class);
+        $this->repository = $this->createStub(Repository::class);
         $this->indexOperator = $this->createMock(Index::class);
-        $this->repository->expects($this->any())
+        $this->repository
             ->method("getIndexOperator")
             ->willReturn($this->indexOperator);
-        $this->repository->expects($this->any())
+        $this->repository
             ->method("getRoot")
             ->willReturn(self::REPOSITORY_ROOT);
 
-        $this->psalmConfig = $this->createMock(PsalmConfig::class);
-        $this->psalmConfigLoader->expects($this->any())
+        $this->psalmConfig = $this->createStub(PsalmConfig::class);
+        $psalmConfigLoader
             ->method("getConfigForProject")
-            ->with($this->equalTo(self::REPOSITORY_ROOT))
-            ->willReturn($this->psalmConfig);
+            ->willReturnMap([[self::REPOSITORY_ROOT, $this->psalmConfig]]);
 
         $this->io = new NullIO();
     }
@@ -89,7 +87,7 @@ final class PsalmCheckActionTest extends TestCase
             ->method("getStagedFilesOfType")
             ->with("php")
             ->willReturn([ "foo.php", "bar.php" ]);
-        $this->psalmConfig->expects($this->any())
+        $this->psalmConfig
             ->method("belongsToProjectFiles")
             ->willReturnMap([
                 [ "foo.php", false ],
@@ -114,7 +112,7 @@ final class PsalmCheckActionTest extends TestCase
             ->method("getStagedFilesOfType")
             ->with("php")
             ->willReturn([ "foo.php", "bar.php" ]);
-        $this->psalmConfig->expects($this->any())
+        $this->psalmConfig
             ->method("belongsToProjectFiles")
             ->willReturn(true);
 
@@ -139,7 +137,7 @@ final class PsalmCheckActionTest extends TestCase
             ->method("getStagedFilesOfType")
             ->with("php")
             ->willReturn([ "foo.php", "bar.php" ]);
-        $this->psalmConfig->expects($this->any())
+        $this->psalmConfig
             ->method("belongsToProjectFiles")
             ->willReturn(true);
 
@@ -165,7 +163,7 @@ final class PsalmCheckActionTest extends TestCase
             ->method("getStagedFilesOfType")
             ->with("php")
             ->willReturn([ "foo.php", "bar.php" ]);
-        $this->psalmConfig->expects($this->any())
+        $this->psalmConfig
             ->method("belongsToProjectFiles")
             ->willReturn(true);
 
@@ -191,7 +189,7 @@ final class PsalmCheckActionTest extends TestCase
             ->method("getStagedFilesOfType")
             ->with("php")
             ->willReturn([ "foo.php", "bar.php" ]);
-        $this->psalmConfig->expects($this->any())
+        $this->psalmConfig
             ->method("belongsToProjectFiles")
             ->willReturnMap([
                 [ "foo.php", false ],
